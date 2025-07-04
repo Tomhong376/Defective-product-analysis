@@ -1,0 +1,75 @@
+
+
+#define rf_bit_long		24+2//+2是补偿优化后的发射代码偏差和补偿波形
+
+extern dword rf_data;	//|接收数据输出值
+extern dword rf_temp;	//|接收数据缓存，相同类型
+extern dword rf_data_send;	//
+extern byte rf_low_count;
+extern byte rf_high_count;
+extern byte rf_bit_time;
+extern byte bit_count;
+
+extern byte bit_long_count, send_bit_count;
+
+
+extern byte rf_flag;
+extern bit flag_rf_pre;//			:rf_flag.0
+extern bit flag_rf_now;//			:rf_flag.1
+extern bit flag_rf_code_ready;//	:rf_flag.2
+extern bit	flag_rf_ok;//			:rf_flag.3
+extern bit flag_rf_active;//		:rf_flag.4
+extern bit flag_update_rf;//		:rf_flag.5
+
+
+
+
+extern bit flag_receive_active;//	:rf_flag.4
+
+//---------------------------
+//rf接收发送程序中断部分
+//void rf_receive(void);
+//void rf_send(void);
+//rf接收发送此程序主程序部分
+//void rf_receive_deal(void);
+//void rf_send_deal(void);
+//---------------------------
+
+rf_send macro
+{
+	if(send_bit_count)
+	{
+		if(bit_long_count)
+		{
+			bit_long_count --;
+			if(rf_data_send$3.0)
+			{
+				if(bit_long_count == 0)
+				{
+					p_rf = 1;
+				}
+			}
+			else
+			{
+				if(bit_long_count == 1)
+				{
+					p_rf = 1;
+				}
+			}
+		}
+		else
+		{
+			send_bit_count --;
+			if(send_bit_count)
+			{
+				bit_long_count = 2;
+				p_rf = 0;
+				slc rf_data_send$0;
+				slc rf_data_send$1;
+				slc rf_data_send$2;
+				slc rf_data_send$3;
+			}
+		}
+	}
+}
+endm

@@ -1,0 +1,769 @@
+
+
+#include	"../define.h"
+
+//#define blink_keep_time		45//此处调整闪烁周期，T = blink_keep_time*5ms*2
+#define degree_delay_time	250
+
+/*
+#define degree_max			3
+
+#define degree_data4		415+5
+#define degree_data3		380+5
+#define degree_data2		350+5
+#define degree_data1		320+5
+*/
+//#define v_charge_off		420
+
+
+
+byte led_blink_count;
+byte led_blink_delay;
+byte led_blink_half_circle;
+byte led_duty,led_r_duty,led_g_duty,led_b_duty;
+byte led_count,led_delay_count,led_turn;
+byte led_duty_delay;
+
+
+byte duty_change_delay;
+byte led_delay;
+
+byte nixie_count;
+byte nixie_pb_data[7];
+byte nixie_data_temp[7];
+byte nixie_temp;
+word nixie_point;
+byte nixie_point_offset;
+word show_degree_delay;
+
+byte r_led_flag;
+bit flag_blink_force	:r_led_flag.0;
+bit flag_led			:r_led_flag.1;
+
+
+byte r_led_flag1;
+bit flag_led_r			:r_led_flag1.0;
+bit flag_led_g			:r_led_flag1.1;
+bit flag_led_b			:r_led_flag1.2;
+bit flag_led_w			:r_led_flag1.3;
+bit flag_led_rg			:r_led_flag1.4;
+bit flag_led_rb			:r_led_flag1.5;
+bit flag_led_gb			:r_led_flag1.6;
+bit flag_led_wbr		:r_led_flag1.7;
+
+
+
+void reset_show_vdd();
+void preheat_slow_change(void);
+void preheat_slow_change2(void);
+void preheat_blink(void);
+
+//-------------------------------------//
+//---------------亮灯------------------//
+//-------------------------------------//
+void led_on(void)
+{
+	flag_led = 1;
+//	p_led_on;
+}
+//-------------------------------------//
+//---------------灭灯------------------//
+//-------------------------------------//
+void led_off(void)
+{
+	flag_led = 0;
+//	p_led_off;
+}
+
+//-------------------------------------//
+//---------------灯输出----------------//
+//-------------------------------------//
+void led_output(void)
+{
+	if(led_blink_count)
+	{
+		if(led_blink_count.0)
+		{
+			led_duty = 0;
+//			p_led_off;
+		}
+		else
+		{
+			led_duty = led_duty_max;
+//			p_led_on;
+		}
+		led_blink_delay ++;
+		if(led_blink_delay >= led_blink_half_circle)
+		{
+			led_blink_delay = 0;
+			led_blink_count --;
+			if(led_blink_count == 0)
+			{
+				flag_blink_force = 0;	//解除强制闪烁
+				led_blink_half_circle = 50;
+				flag_led = 0;
+				clear_led_select();
+				smoke_led_delay = 0;
+			}
+		}
+	}
+	else
+	{
+		led_blink_delay = 0;
+		if(!flag_pre_heat)
+		{
+//			led_delay ++;
+//			if(led_delay.0)
+			{
+				if(flag_led)
+				{
+	//				led_duty = led_duty_max;
+					if(led_duty < led_duty_max)
+					{
+						led_duty ++;
+					}
+				}
+				else
+				{
+	//				led_duty = 0;
+					if(led_duty)
+					{
+						led_duty --;
+					}
+					if(smoke_led_delay) 	smoke_led_delay ++;
+				}
+			}
+			led_delay_count = 0;
+			led_turn = 0;
+		}
+		else
+		{
+//			preheat_blink();
+			preheat_slow_change();
+//			preheat_slow_change2();
+//			return;
+
+		}
+	}
+/*
+	if(led_duty)
+	{
+		a = led_duty >> 1;
+		if(flag_led_r)
+		{
+			led_r_duty = a;
+			led_g_duty = 0;
+			led_b_duty = 0;
+		}
+		else if(flag_led_g)
+		{
+			led_r_duty = 0;
+			led_g_duty = a;
+			led_b_duty = 0;
+		}
+		else if(flag_led_b)
+		{
+			led_r_duty = 0;
+			led_g_duty = 0;
+			led_b_duty = a;
+		}
+		else if(flag_led_gb)
+		{
+			led_r_duty = 0;
+			led_b_duty = a;
+			led_g_duty = a;
+		}
+		else if(flag_led_rb)
+		{
+			led_r_duty = a;
+			led_b_duty = a;
+			led_g_duty = 0;
+		}
+		else if(flag_led_rg)
+		{
+			led_r_duty = a;
+			led_b_duty = 0;
+			a >>= 1;//红蓝灯有限流电阻
+			led_g_duty = a;
+		}
+		else if(flag_led_w)
+		{
+			led_g_duty = a;
+//			a >>= 1;//红蓝灯无限流电阻
+			led_r_duty = a;
+			led_b_duty = a;
+		}
+		else if(flag_led_wbr)
+		{
+			led_r_duty = a;
+			led_b_duty = a;
+			a >>= 1;
+			led_g_duty = a;
+		}
+		else
+		{
+			led_r_duty = 0;
+			led_g_duty = 0;
+			led_b_duty = 0;
+		}
+	}
+	else
+	{
+		led_r_duty = 0;
+		led_g_duty = 0;
+		led_b_duty = 0;
+	}
+*/
+/*	if(flag_smoking || flag_pre_heat || flag_charge)
+	{
+		led_duty_delay ++;
+		if(led_duty_delay.0)
+		{
+			led_duty_delay = 0;
+			rf_data_send = rf_data;
+			send_bit_count = rf_bit_long;//该值非零时，中断在发码。
+		}
+	}*/
+}
+
+
+
+
+void preheat_blink(void)
+{
+	led_duty = led_duty_max;
+	led_delay_count ++;
+	if(led_delay_count >= 61)
+	{
+		led_delay_count = 0;
+		led_turn ++;
+		if(led_turn >= 3)
+		{
+			led_turn = 0;
+		}
+	}
+	if(led_turn)
+	{
+		if(led_turn == 1)
+		{
+			flag_led_w = 0;
+			flag_led_b = 1;
+			flag_led_r = 0;
+		}
+		else 
+		{
+			flag_led_w = 1;
+			flag_led_b = 0;
+			flag_led_r = 0;
+		}
+	}
+	else
+	{
+		flag_led_w = 0;
+		flag_led_b = 0;
+		flag_led_r = 1;
+	}		
+}
+
+void preheat_slow_change(void)
+{
+	led_delay_count ++;
+	if((led_delay_count != 2) && (led_delay_count != 5))//这段是预热渐变代码//12.5*5ms duty++
+	{
+		return;
+	}
+	if(led_delay_count == 5)
+	{
+		led_delay_count = 0;
+	}
+	if(led_turn.0)
+	{
+		if(led_duty)
+		{
+			led_duty --;
+		}
+		else
+		{
+			led_turn ++;
+		}
+	}
+	else
+	{
+		if(led_duty < (led_duty_max))
+		{
+			led_duty ++;
+		}
+		else
+		{
+			led_turn ++;
+		}
+	}
+	if((led_duty == 0) || (led_duty == 1))
+	{
+		clear_led_select();
+		switch(led_turn)
+		{
+		case 0:
+		case 1:
+			flag_led_r = 1;
+			break;
+		case 2:
+		case 3:
+			flag_led_rg = 1;
+			break;
+		case 4:
+		case 5:
+			flag_led_g = 1;
+			break;
+		case 6:
+		case 7:
+			flag_led_b = 1;
+			break;
+		case 8:
+		case 9:
+			flag_led_gb = 1;
+			break;
+		case 10:
+		case 11:
+			flag_led_rb = 1;
+			break;
+		default:
+			led_turn = 0;
+		}
+	}
+}
+
+void preheat_slow_change2(void)
+{
+	led_delay_count ++;
+	if(led_delay_count < 5)
+	{
+		return;
+	}
+	led_delay_count = 0;
+	switch(led_turn)
+	{
+	case 0:
+		led_g_duty = 0;
+		led_b_duty = 0;
+		led_r_duty ++;
+		if(led_r_duty >= led_duty_max)
+		{
+			led_turn ++;
+		}
+		break;
+	case 1:
+		led_r_duty = led_duty_max;
+		led_b_duty = 0;
+		led_g_duty ++;
+		if(led_g_duty >= led_duty_max)
+		{
+			led_turn ++;
+		}
+		break;
+	case 2:
+		led_g_duty = led_duty_max;
+		led_b_duty = 0;
+		led_r_duty --;
+		if(led_r_duty == 0)
+		{
+			led_turn ++;
+		}
+		break;
+	case 3:
+		led_g_duty = led_duty_max;
+		led_r_duty = 0;
+		led_b_duty ++;
+		if(led_b_duty >= led_duty_max)
+		{
+			led_turn ++;
+		}
+		break;
+	case 4:
+		led_b_duty = led_duty_max;
+		led_r_duty = 0;
+		led_g_duty --;
+		if(led_g_duty == 0)
+		{
+			led_turn ++;
+		}
+		break;
+	case 5:
+		led_g_duty = 0;
+		led_b_duty = led_duty_max;
+		led_r_duty ++;
+		if(led_r_duty >= led_duty_max)
+		{
+			led_turn ++;
+		}
+		break;
+	case 6:
+		led_g_duty = 0;
+		led_r_duty = led_duty_max;
+		led_b_duty --;
+		if(led_b_duty == 0)
+		{
+			led_turn ++;
+		}
+		break;
+	case 7:
+		led_g_duty = 0;
+		led_b_duty = 0;
+		led_r_duty --;
+		if(led_r_duty == 0)
+		{
+			led_turn = 0;
+		}
+		break;
+	default:
+		led_turn = 0;
+	}
+}
+
+
+void clear_led_select(void)
+{
+	r_led_flag1 = 0;
+/*	flag_led_r = 0;
+	flag_led_g = 0;
+	flag_led_b = 0;
+	flag_led_w = 0;
+	flag_led_rg = 0;
+	flag_led_rb = 0;
+	flag_led_gb = 0;
+	flag_led_wbr = 0;
+*/
+
+}
+
+
+/******************************************/
+/*数码管显示数据表*************************/
+/******************************************/
+void nixie_table(void)
+{
+	a ++;
+	pcadd a;
+	ret	0xFC;//0
+	ret	0x60;//1
+	ret	0xDA;//2
+	ret	0xF2;//3
+	ret	0x66;//4
+	ret	0xB6;//5
+	ret	0xBE;//6
+	ret	0xE0;//7
+	ret	0xFE;//8
+	ret	0xF6;//9
+	ret	0x00;//null
+}
+/******************************************/
+/*数码管显示段数据表***********************/
+/******************************************/
+void seg_pbc_table()
+{
+	a ++;
+	pcadd a;
+	ret	0x20;//7:pb5
+	ret	0x04;//6:pb2
+	ret	0x20;//5:pb5
+	ret	0x08;//4:pb3
+	ret	0x02;//3:pb1
+	ret	0x01;//2:pb0
+	ret	0x10;//1:pb4
+}
+//电池图标数据填入
+void bat_logo_display(void)
+{
+	nixie_temp = a;
+	switch(nixie_temp)
+	{
+	case 4:
+		nixie_data_temp[4].4 = 1;//K1
+	case 3:
+		nixie_data_temp[4].0 = 1;//K2
+	case 2:
+		nixie_data_temp[4].1 = 1;//K3
+	case 1:
+		nixie_data_temp[4].3 = 1;//K4
+	}
+	//电池框
+	nixie_data_temp[3].1 = 1;//H4
+	nixie_data_temp[3].5 = 1;//H5
+	nixie_data_temp[3].2 = 1;//H6
+	nixie_data_temp[6].2 = 1;//K5
+	nixie_data_temp[5].4 = 1;//K6
+	nixie_data_temp[5].0 = 1;//K7
+}
+
+//点屏数据输出
+void nixie_data_output(void)
+{
+	nixie_pb_data[0] = nixie_data_temp[0];
+	nixie_pb_data[1] = nixie_data_temp[1];
+	nixie_pb_data[2] = nixie_data_temp[2];
+	nixie_pb_data[3] = nixie_data_temp[3];
+	nixie_pb_data[4] = nixie_data_temp[4];
+	nixie_pb_data[5] = nixie_data_temp[5];
+	nixie_pb_data[6] = nixie_data_temp[6];
+}
+//清除点屏数据，等同灭屏
+void clear_nixie_data(void)
+{
+	nixie_pb_data[0] = 0;
+	nixie_pb_data[1] = 0;
+	nixie_pb_data[2] = 0;
+	nixie_pb_data[3] = 0;
+	nixie_pb_data[4] = 0;
+	nixie_pb_data[5] = 0;
+	nixie_pb_data[6] = 0;
+}
+
+byte nixie_delay;
+byte nixie_shi, nixie_ge;
+byte nixie_bat_count;
+byte nixie_charge_degree_turn;
+void nixie_output(void)
+{
+	nixie_data_temp[0] = 0;
+	nixie_data_temp[1] = 0;
+	nixie_data_temp[2] = 0;
+	nixie_data_temp[3] = 0;
+	nixie_data_temp[4] = 0;
+	nixie_data_temp[5] = 0;
+	nixie_data_temp[6] = 0;
+
+	if(flag_smoking || flag_pre_heat || led_blink_count || show_degree_delay)
+	{	
+		if(flag_pre_heat)
+		{
+			show_degree_delay = 300;//输出等级显示延迟1.5秒
+			nixie_data_temp[3].4 = 1;//H2//显示V	
+			nixie_data_temp[3].0 = 1;//H3//显示.	
+			nixie_shi = Vout_pre_heat/100; nixie_ge = (Vout_pre_heat-(Vout_pre_heat/100)*100)/10;
+		}
+		else if(flag_smoking && (smoking_time_count > 80))//吸烟输出0.4秒后才开始显示倒计时
+		{
+			show_degree_delay = 300;//输出等级显示延迟1.5秒
+			nixie_shi = 10;//null 不显示
+			nixie_data_temp[2].2 = 1;//H2//显示S	
+			math_word = smoking_time_count - 80;
+			nixie_ge = 9;
+			while(math_word > 200)
+			{
+				math_word -= 200;
+				if(nixie_ge) nixie_ge --;
+			}
+		}
+		else
+		{
+			if(flag_smoking || led_blink_count)			show_degree_delay = 300;//输出等级显示延迟1.5秒
+			if(show_degree_delay)
+			{
+				show_degree_delay --;
+				nixie_data_temp[3].4 = 1;//H2//显示V	
+				nixie_data_temp[3].0 = 1;//H3//显示.	
+				if(V_out_degree == 0)		{	nixie_shi = Vout_degree0/100; nixie_ge = (Vout_degree0-(Vout_degree0/100)*100)/10; }
+				else if(V_out_degree == 1) 	{	nixie_shi = Vout_degree1/100; nixie_ge = (Vout_degree1-(Vout_degree1/100)*100)/10; }
+				else if(V_out_degree == 2) 	{	nixie_shi = Vout_degree2/100; nixie_ge = (Vout_degree2-(Vout_degree2/100)*100)/10; }
+			}
+		}
+
+		a = nixie_shi;
+		nixie_table();
+		nixie_temp = a;
+		if(nixie_temp.7)	nixie_data_temp[nixie_com1].nixie_seg2 = 1;//A1	
+		if(nixie_temp.6)	nixie_data_temp[nixie_com1].nixie_seg3 = 1;//B1	
+		if(nixie_temp.5)	nixie_data_temp[nixie_com1].nixie_seg4 = 1;//C1	
+		if(nixie_temp.4)	nixie_data_temp[nixie_com1].nixie_seg5 = 1;//D1	
+		if(nixie_temp.3)	nixie_data_temp[nixie_com1].nixie_seg6 = 1;//E1	
+		if(nixie_temp.2)	nixie_data_temp[nixie_com2].nixie_seg1 = 1;//F1
+		if(nixie_temp.1)	nixie_data_temp[nixie_com2].nixie_seg3 = 1;//G1	
+
+		a = nixie_ge;
+		nixie_table();
+		nixie_temp = a;
+		if(nixie_temp.7)	nixie_data_temp[nixie_com2].nixie_seg4 = 1;//A2	
+		if(nixie_temp.6)	nixie_data_temp[nixie_com2].nixie_seg5 = 1;//B2	
+		if(nixie_temp.5)	nixie_data_temp[nixie_com2].nixie_seg6 = 1;//C2	
+		if(nixie_temp.4)	nixie_data_temp[nixie_com3].nixie_seg1 = 1;//D2	
+		if(nixie_temp.3)	nixie_data_temp[nixie_com3].nixie_seg2 = 1;//E2	
+		if(nixie_temp.2)	nixie_data_temp[nixie_com3].nixie_seg4 = 1;//F2	
+		if(nixie_temp.1)	nixie_data_temp[nixie_com3].nixie_seg5 = 1;//G2
+
+		if(!flag_charge)//如果没在充电，点好电量就发送给屏板;输出的时候,无充电就显示电量,有充电则不干涉电池图标的显示
+		{
+			//电池格子
+			a = vdd_degree;
+			bat_logo_display();
+			nixie_data_output();
+//			return;
+		}
+	}
+	else
+	{
+		//如果不充电，就灭屏
+		if(!flag_charge)		clear_nixie_data();//灭屏
+	}
+	if(flag_charge)//如果在充电，前面不会安排发送，这里搞好电池图标再发送，充电不管档位电压显示
+	{
+		if(flag_full)
+		{
+			nixie_bat_count = 0;
+			nixie_charge_degree_turn = 4;
+		}
+		else
+		{
+			if(nixie_bat_count == 100-1)
+			{
+				nixie_charge_degree_turn ++;
+				if(nixie_charge_degree_turn > 4)
+				{
+					a = vdd_degree;
+					nixie_charge_degree_turn = a;
+					if(a) 	nixie_charge_degree_turn --;
+				}
+			}
+			nixie_bat_count ++;
+			if(nixie_bat_count >= 100)//0.5秒
+			{
+				nixie_bat_count = 0;
+			}
+		}
+
+		//电池格子
+		a = nixie_charge_degree_turn;
+		bat_logo_display();
+
+		nixie_data_output();
+	}
+	else
+	{
+		nixie_bat_count = 0;
+		nixie_charge_degree_turn = vdd_degree;
+	}
+}
+
+/*void nixie_output(void)//点屏测试代码
+{
+	nixie_data_temp[0] = 0;
+	nixie_data_temp[1] = 0;
+	nixie_data_temp[2] = 0;
+	nixie_data_temp[3] = 0;
+	nixie_data_temp[4] = 0;
+	nixie_data_temp[5] = 0;
+	nixie_data_temp[6] = 0;
+
+//------------------------------------------------数码显示部分
+	nixie_test_delay ++;
+	if(nixie_test_delay >= 100)		nixie_test_delay = 0;
+	else							return;
+	
+/*	if(nixie_test_count == 0)		nixie_test_count = 0x80000000;	//|逐笔点亮
+	else							nixie_test_count >>= 1;			
+	if((nixie_test_count == 0x01000000) || (nixie_test_count == 0x00010000) || (nixie_test_count == 0x00000001))
+	{
+		nixie_test_count >>= 1;
+	}
+	else if(nixie_test_count == 0x00000200)
+	{
+		nixie_test_count >>= 2;
+	}
+* /
+	nixie_test_count = 0xFFFFFFFF;		//全亮
+
+	nixie_temp = nixie_test_count$3;
+	if(nixie_temp.7)	nixie_data_temp[nixie_com1].nixie_seg2 = 1;//A1	
+	if(nixie_temp.6)	nixie_data_temp[nixie_com1].nixie_seg3 = 1;//B1	
+	if(nixie_temp.5)	nixie_data_temp[nixie_com1].nixie_seg4 = 1;//C1	
+	if(nixie_temp.4)	nixie_data_temp[nixie_com1].nixie_seg5 = 1;//D1	
+	if(nixie_temp.3)	nixie_data_temp[nixie_com1].nixie_seg6 = 1;//E1	
+	if(nixie_temp.2)	nixie_data_temp[nixie_com2].nixie_seg1 = 1;//F1
+	if(nixie_temp.1)	nixie_data_temp[nixie_com2].nixie_seg3 = 1;//G1	
+
+	nixie_temp = nixie_test_count$2;
+	if(nixie_temp.7)	nixie_data_temp[nixie_com2].nixie_seg4 = 1;//A2	
+	if(nixie_temp.6)	nixie_data_temp[nixie_com2].nixie_seg5 = 1;//B2	
+	if(nixie_temp.5)	nixie_data_temp[nixie_com2].nixie_seg6 = 1;//C2	
+	if(nixie_temp.4)	nixie_data_temp[nixie_com3].nixie_seg1 = 1;//D2	
+	if(nixie_temp.3)	nixie_data_temp[nixie_com3].nixie_seg2 = 1;//E2	
+	if(nixie_temp.2)	nixie_data_temp[nixie_com3].nixie_seg4 = 1;//F2	
+	if(nixie_temp.1)	nixie_data_temp[nixie_com3].nixie_seg5 = 1;//G2
+
+	nixie_temp = nixie_test_count$1;
+	if(nixie_temp.7)	nixie_data_temp[nixie_com3].nixie_seg6 = 1;//H1	
+	if(nixie_temp.6)	nixie_data_temp[nixie_com4].nixie_seg1 = 1;//H2	
+	if(nixie_temp.5)	nixie_data_temp[nixie_com4].nixie_seg2 = 1;//H3	
+	if(nixie_temp.4)	nixie_data_temp[nixie_com4].nixie_seg3 = 1;//H4	
+	if(nixie_temp.3)	nixie_data_temp[nixie_com4].nixie_seg5 = 1;//H5	
+	if(nixie_temp.2)	nixie_data_temp[nixie_com4].nixie_seg6 = 1;//H6	
+
+	nixie_temp = nixie_test_count$0;
+	if(nixie_temp.7)	nixie_data_temp[nixie_com5].nixie_seg1 = 1;//K1	
+	if(nixie_temp.6)	nixie_data_temp[nixie_com5].nixie_seg2 = 1;//K2	
+	if(nixie_temp.5)	nixie_data_temp[nixie_com5].nixie_seg3 = 1;//K3	
+	if(nixie_temp.4)	nixie_data_temp[nixie_com5].nixie_seg4 = 1;//K4	
+	if(nixie_temp.3)	nixie_data_temp[nixie_com7].nixie_seg6 = 1;//K5//K5特殊，单独一组来点亮	
+	if(nixie_temp.2)	nixie_data_temp[nixie_com6].nixie_seg1 = 1;//K6	
+	if(nixie_temp.1)	nixie_data_temp[nixie_com6].nixie_seg2 = 1;//K7	
+
+	nixie_pb_data[0] = nixie_data_temp[0];
+	nixie_pb_data[1] = nixie_data_temp[1];
+	nixie_pb_data[2] = nixie_data_temp[2];
+	nixie_pb_data[3] = nixie_data_temp[3];
+	nixie_pb_data[4] = nixie_data_temp[4];
+	nixie_pb_data[5] = nixie_data_temp[5];
+	nixie_pb_data[6] = nixie_data_temp[6];
+}
+
+//---调试代码
+.disgint;
+PA.3 = 1;
+if(VDD$1.7)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$1.6)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$1.5)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$1.4)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$1.3)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$1.2)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$1.1)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$1.0)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$0.7)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$0.6)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$0.5)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$0.4)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$0.3)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$0.2)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$0.1)	{nop;nop;nop;nop;}
+PA.3 = 0;	nop;nop
+PA.3 = 1;
+if(VDD$0.0)	{nop;nop;nop;nop;}
+PA.3 = 0;
+engint;
+*/

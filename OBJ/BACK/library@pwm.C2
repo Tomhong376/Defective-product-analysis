@@ -1,0 +1,28 @@
+
+#include "../define.h"
+
+
+byte mos_duty;
+byte pwm_count;
+
+byte r_flag_pwm;
+bit flag_pwm_deal	:r_flag_pwm.0
+
+
+void keep3_7v_output(void);
+/***************************************/
+/****************pwmÊä³ö****************/
+/***************************************/
+void pwm_output(void)
+{
+	if((!flag_smoking) && (!flag_pre_heat))
+	{
+	#if (charge_Type == Screw_charging)
+		if((!flag_charge) || (flag_charge && flag_full)) 
+	#endif
+		{
+			mos_duty = 0;
+			mos_off();
+		}
+	}
+}

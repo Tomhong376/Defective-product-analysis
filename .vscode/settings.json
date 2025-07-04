@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "rf.C": "cpp",
+        "iic-.C": "cpp",
+        "system.C": "cpp",
+        "pwm.C": "cpp",
+        "MAIN_TM8C.C": "cpp",
+        "ad.C": "cpp",
+        "led.C": "cpp"
+    }
+}
