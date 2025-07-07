@@ -6,6 +6,8 @@
         "pwm.C": "cpp",
         "MAIN_TM8C.C": "cpp",
         "ad.C": "cpp",
-        "led.C": "cpp"
+        "led.C": "cpp",
+        "charge_full.C": "cpp",
+        "math1.C": "cpp"
     }
 }
