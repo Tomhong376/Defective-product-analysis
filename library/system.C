@@ -23,7 +23,7 @@ byte vdd_degree_temp;
 word vdd_degree_delay;
 word VDD_temp;
 
-//#define full_count_protect smoking_time_count//¸´ÓÃÄÚ´æ!!!!!!!!!
+//#define full_count_protect smoking_time_count//å¤ç”¨å†…å­˜!!!!!!!!!
 eword full_count_protect;
 byte smoke_led_delay;
 
@@ -32,10 +32,10 @@ byte r_system_flag;
 bit flag_sleep			:r_system_flag.0	
 bit flag_mos			:r_system_flag.1
 bit flag_smoking		:r_system_flag.2
-bit flag_overload		:r_system_flag.3//·¢Éú¶ÌÂ·
+bit flag_overload		:r_system_flag.3//å‘ç”ŸçŸ­è·¯
 bit flag_full			:r_system_flag.4
 bit flag_charge			:r_system_flag.5
-bit flag_low			:r_system_flag.6//Ç·Ñ¹
+bit flag_low			:r_system_flag.6//æ¬ å‹
 bit flag_lock			:r_system_flag.7
 
 byte r_system_flag1;
@@ -90,24 +90,24 @@ void system_deal(void)
 {
 	if(!flag_blink_force)
 	{
-		key_scan_c_5c();//°´¼üÉ¨Ãè
-		charge_scan();//³äµç¼ì²âÉ¨Ãè
+		else if(flag_5click && (!led_blink_count))//(Ñ¹)Ø»
+		charge_scan();//å……ç”µæ£€æµ‹æ‰«æ
 		vdd_degree_scan();
-		///////////////////³äµçÅĞ¶Ï£¬ÓÅÏÈ´¦Àí
+		///////////////////å……ç”µåˆ¤æ–­ï¼Œä¼˜å…ˆå¤„ç†
 //		if(flag_charge)
 		if(flag_Screw_charging)
 		{
 //			charge_deal();
 		}
 //		else if(flag_5click && (!led_blink_count))
-		else if(flag_5click)//ÉÁµÆÖĞ(µÍÑ¹)ÔÊĞí¹Ø»ú
+		else if(flag_5click)//é—ªç¯ä¸­(ä½å‹)å…è®¸å…³æœº
 		{
 			led_blink_count = blink_lock*2+1;
 			led_blink_half_circle = 50;
-//			flag_blink_force = 1;						//!!!!!ÓĞÕâ¾ä¾ÍÊÇÉÁË¸ÆÚ¼ä²»¸øËø»ú
+//			flag_blink_force = 1;						//!!!!!æœ‰è¿™å¥å°±æ˜¯é—ªçƒæœŸé—´ä¸ç»™é”æœº
 			led_blink_delay = 0;
-//			degree_led_select();//µ÷Ñ¹µµÎ»Ñ¡µÆ
-//			clear_led_select();//µ÷Ñ¹µµÎ»Ñ¡µÆ
+//			degree_led_select();//è°ƒå‹æ¡£ä½é€‰ç¯
+//			clear_led_select();//è°ƒå‹æ¡£ä½é€‰ç¯
 
 			if(flag_lock)
 			{
@@ -128,10 +128,10 @@ void system_deal(void)
 				{
 					V_out_degree = 0;
 				}
-//				degree_led_select();//µ÷Ñ¹µµÎ»Ñ¡µÆ
-				led_blink_count = blink_degree_select*2+1;//µ÷µµÉÁË¸
+//				degree_led_select();//è°ƒå‹æ¡£ä½é€‰ç¯
+				led_blink_count = blink_degree_select*2+1;//è°ƒæ¡£é—ªçƒ
 //				led_blink_half_circle = 50;
-//				flag_blink_force = 1;						//!!!!!ÓĞÕâ¾ä¾ÍÊÇÉÁË¸ÆÚ¼ä²»¸øËø»ú
+//				flag_blink_force = 1;						//!!!!!æœ‰è¿™å¥å°±æ˜¯é—ªçƒæœŸé—´ä¸ç»™é”æœº
 				led_blink_delay = 40;	
 			}
 		}
@@ -145,10 +145,10 @@ void system_deal(void)
 					if(smoking_time_count >= pre_heat_time_up_data)
 					{
 						flag_pre_heat = 0;
-//						degree_led_select();//µ÷Ñ¹µµÎ»Ñ¡µÆ
-//						led_blink_count = blink_smoke_time_up*2+1;//³¬Ê±ÉÁË¸
+//						degree_led_select();//è°ƒå‹æ¡£ä½é€‰ç¯
+//						led_blink_count = blink_smoke_time_up*2+1;//è¶…æ—¶é—ªçƒ
 //						led_blink_half_circle = 27;
-//						flag_blink_force = 1;						//!!!!!ÓĞÕâ¾ä¾ÍÊÇÉÁË¸ÆÚ¼ä²»¸øËø»ú
+//						flag_blink_force = 1;						//!!!!!æœ‰è¿™å¥å°±æ˜¯é—ªçƒæœŸé—´ä¸ç»™é”æœº
 						led_r_duty = 0;
 						led_g_duty = 0;
 						led_b_duty = 0;
@@ -156,7 +156,7 @@ void system_deal(void)
 				}
 				if(flag_2click && (!led_blink_count))
 				{
-//					degree_led_select();//µ÷Ñ¹µµÎ»Ñ¡µÆ
+//					degree_led_select();//è°ƒå‹æ¡£ä½é€‰ç¯
 					flag_pre_heat = 1;
 					led_duty = 0;
 					smoking_time_count = 0;
@@ -172,37 +172,37 @@ void system_deal(void)
 		}
 		elseif(!led_blink_count)
 		{
-			///////////////////ÎüÑÌÅĞ¶Ï
+			///////////////////å¸çƒŸåˆ¤æ–­
 			if(flag_key_press)
 			{
 				flag_pre_heat = 0;
 				if(!flag_lock)
 				{
-//					degree_led_select();//µ÷Ñ¹µµÎ»Ñ¡µÆ
+//					degree_led_select();//è°ƒå‹æ¡£ä½é€‰ç¯
 //					if(VDD >= VDD_low_data)
 					if((flag_low == 0) && (VDD >= VDD_low_data))
 					{
-						flag_smoking = 1;//Õı³£ÎüÑÌ
+						flag_smoking = 1;//æ­£å¸¸å¸çƒŸ
 					#if(short_reset_deal == reset_keep_Vout_degree)
 						enable_mos_working_mack_ram();
 					#endif
-						mos_duty = mos_duty_max;//*370/420;//ÒÔ×îĞ¡Õ¼¿Õ±È¿ªÊ¼
+						mos_duty = mos_duty_max;//*370/420;//ä»¥æœ€å°å ç©ºæ¯”å¼€å§‹
 						mos_on(); 
 						led_on();	
 						led_duty = 0;//led_duty_max/10;
-						smoke_led_delay = 102;//³äµçµÆ±ÈÁ¬»÷ÍíÉúĞ§
-						smoking_time_count = 0;//³éÑÌ¼ÆÊ±ÇåÁã
+						smoke_led_delay = 102;//å……ç”µç¯æ¯”è¿å‡»æ™šç”Ÿæ•ˆ
+						smoking_time_count = 0;//æŠ½çƒŸè®¡æ—¶æ¸…é›¶
 					}
 					else
 					{
 						flag_low = 1;
-						led_blink_count = blink_low*2+1;//µÍÑ¹ÉÁË¸
-//						flag_blink_force = 1;			//!!!!!ÓĞÕâ¾ä¾ÍÊÇÉÁË¸ÆÚ¼ä²»¸øËø»ú
+						led_blink_count = blink_low*2+1;//ä½å‹é—ªçƒ
+//						flag_blink_force = 1;			//!!!!!æœ‰è¿™å¥å°±æ˜¯é—ªçƒæœŸé—´ä¸ç»™é”æœº
 //						led_blink_half_circle = 50;
 					}
 				}
 			}
-			///////////////////ÎüÑÌ¹ı³Ì´¦Àí
+			///////////////////å¸çƒŸè¿‡ç¨‹å¤„ç†
 			elseif(flag_smoking)
 			{
 				if(flag_key)
@@ -210,9 +210,9 @@ void system_deal(void)
 					smoking_time_count ++;
 					if(smoking_time_count >= smoke_time_up_data)
 					{
-						led_blink_count = blink_smoke_time_up*2+1;//³¬Ê±ÉÁË¸
+						led_blink_count = blink_smoke_time_up*2+1;//è¶…æ—¶é—ªçƒ
 //						led_blink_half_circle = 27;
-//						flag_blink_force = 1;						//!!!!!ÓĞÕâ¾ä¾ÍÊÇÉÁË¸ÆÚ¼ä²»¸øËø»ú
+//						flag_blink_force = 1;						//!!!!!æœ‰è¿™å¥å°±æ˜¯é—ªçƒæœŸé—´ä¸ç»™é”æœº
 						flag_smoking = 0;
 					}
 				}
@@ -223,12 +223,12 @@ void system_deal(void)
 			
 				if(flag_smoking)
 				{
-					//ÈÔÔÚ°´°´×Å°´¼ü
+					//ä»åœ¨æŒ‰æŒ‰ç€æŒ‰é”®
 					led_on();
 				}
 				else
 				{
-					//ËÉ¿ª°´¼ü»ò³¬Ê±
+					//æ¾å¼€æŒ‰é”®æˆ–è¶…æ—¶
 					led_off();
 				}
 			}
@@ -245,15 +245,15 @@ void system_deal(void)
 	flag_3click = 0;
 	flag_2click = 0;
 
-	///////////////////ÅĞ¶ÏÊÇ·ñË¯Ãß
+	///////////////////åˆ¤æ–­æ˜¯å¦ç¡çœ 
 	if((!flag_pre_heat) && (!led_blink_count) && (!flag_smoking) && ((!flag_charge) || (flag_charge && flag_full)) && (!flag_key_active) && (!flag_charge_active) && (!led_duty) && (!show_degree_delay))
-		//²»ÉÁµÆ ²»ÎüÑÌ ²»³äµç»òÕß³äµçÒÑ¾­³äÂú °´¼ü×´Ì¬ÎÈ¶¨ ³äµç½Ó¿Ú×´Ì¬ÎÈ¶¨
+		//ä¸é—ªç¯ ä¸å¸çƒŸ ä¸å……ç”µæˆ–è€…å……ç”µå·²ç»å……æ»¡ æŒ‰é”®çŠ¶æ€ç¨³å®š å……ç”µæ¥å£çŠ¶æ€ç¨³å®š
 //	if((!led_blink_count) && (!flag_smoking) && (!flag_charge) && (!flag_key_active) && (!flag_charge_active))
-		//²»ÉÁµÆ ²»ÎüÑÌ ²»³äµç °´¼ü×´Ì¬ÎÈ¶¨ ³äµç½Ó¿Ú×´Ì¬ÎÈ¶¨
+		//ä¸é—ªç¯ ä¸å¸çƒŸ ä¸å……ç”µ æŒ‰é”®çŠ¶æ€ç¨³å®š å……ç”µæ¥å£çŠ¶æ€ç¨³å®š
 //	if((!led_blink_count) && (!led_duty) && (!flag_smoking) && (!flag_key_active) && (!flag_charge_active))
-		//²»ÉÁµÆ µÆÒÑ¾­Ï¨Ãğ ²»ÎüÑÌ °´¼ü×´Ì¬ÎÈ¶¨ ³äµç½Ó¿Ú×´Ì¬ÎÈ¶¨
+		//ä¸é—ªç¯ ç¯å·²ç»ç†„ç­ ä¸å¸çƒŸ æŒ‰é”®çŠ¶æ€ç¨³å®š å……ç”µæ¥å£çŠ¶æ€ç¨³å®š
 //	if((!led_blink_count) && (!led_duty) && (!flag_smoking) && (!flag_key_active))
-		//²»ÉÁµÆ µÆÒÑ¾­Ï¨Ãğ ²»ÎüÑÌ °´¼ü×´Ì¬ÎÈ¶¨ 
+		//ä¸é—ªç¯ ç¯å·²ç»ç†„ç­ ä¸å¸çƒŸ æŒ‰é”®çŠ¶æ€ç¨³å®š 
 	{
 		sleep_delay_count ++;
 		if(sleep_delay_count >= sleep_delay_time)
@@ -270,7 +270,7 @@ void system_deal(void)
 
 
 /*-------------------------------------//
-//------------³äµçÉ¨Ãè´¦Àí-------------//
+//------------å……ç”µæ‰«æå¤„ç†-------------//
 //-------------------------------------*/
 void charge_scan(void)
 {
@@ -284,19 +284,19 @@ void charge_scan(void)
 		return;
 	}
 
-	flag_charge_active = 0;//Ä¬ÈÏ³äµç½Ó¿Ú×´Ì¬ÎÈ¶¨
+	flag_charge_active = 0;//é»˜è®¤å……ç”µæ¥å£çŠ¶æ€ç¨³å®š
 
 	if(flag_charge)
 	{
 		if(!led_blink_count)
 		{
-		#if(charge_Type==Screw_charging )   //ÂİÎÆÍ·³äµç
-			#if(Screw_charge_off_mode == Check_off_charge_fast)//¿ìËÙ¼ì²âÂİÎÆÍ·¶Ï¿ªÄ£Ê½
+		#if(charge_Type==Screw_charging )   //èºçº¹å¤´å……ç”µ
+			#if(Screw_charge_off_mode == Check_off_charge_fast)//å¿«é€Ÿæ£€æµ‹èºçº¹å¤´æ–­å¼€æ¨¡å¼
 			#elseif(Screw_charge_off_mode == Check_off_charge_slow)
 				check_full();
 				charging_circle();
 			#endif
-		#elseif(charge_Type==USB_charging) //USB³äµç
+		#elseif(charge_Type==USB_charging) //USBå……ç”µ
 			#if(USB_charge_check_full_mode == IO_check_full_pin)
 				flag_low = 0;
 				if(flag_USB_charging)
@@ -316,8 +316,8 @@ void charge_scan(void)
 //				clear_led_select();
 //				if(flag_full)	flag_led_g = 1;
 //				else			flag_led_r = 1;
-				if(flag_charge_pin_ad) return;//AD²É¼¯Î´Íê³É£¬²»½øĞĞIOµçÆ½ÅĞ¶Ï
-				flag_charge_pin_ad = 1;//AD²É¼¯ÒÑÍê³É£¬ÖØĞÂÖÃ1ÌáÊ¾½øĞĞÏÂÒ»ÂÖAD²É¼¯£¬²¢ÔÊĞíÒÔÏÂ½øĞĞÊÇ·ñÔÚ³äµçµÄ¼ì²â
+				if(flag_charge_pin_ad) return;//ADé‡‡é›†æœªå®Œæˆï¼Œä¸è¿›è¡ŒIOç”µå¹³åˆ¤æ–­
+				flag_charge_pin_ad = 1;//ADé‡‡é›†å·²å®Œæˆï¼Œé‡æ–°ç½®1æç¤ºè¿›è¡Œä¸‹ä¸€è½®ADé‡‡é›†ï¼Œå¹¶å…è®¸ä»¥ä¸‹è¿›è¡Œæ˜¯å¦åœ¨å……ç”µçš„æ£€æµ‹
 			#elseif(USB_charge_check_full_mode == BAT_AD_check_full)
 				led_duty = led_duty_max;
 				clear_led_select();
@@ -331,25 +331,25 @@ void charge_scan(void)
 //#if(charge_Type==Screw_charging )
 //	else
 //	{
-		if((!led_blink_count) && (!flag_Screw_charging) && p_check)//ÅĞ¶ÏÂİÎÆÍ·³äµç½ÓÉÏ
+		if((!led_blink_count) && (!flag_Screw_charging) && p_check)//åˆ¤æ–­èºçº¹å¤´å……ç”µæ¥ä¸Š
 		{
-			flag_charge_active = 1;//³äµç½Ó¿ÚÓĞ¶¯Ì¬
+			flag_charge_active = 1;//å……ç”µæ¥å£æœ‰åŠ¨æ€
 			Screw_charge_scan_delay ++;
 			if(Screw_charge_scan_delay >= 100)
 			{
 				Screw_charge_scan_delay = 0;
 				flag_Screw_charging = 1;
-//				flag_charge_active = 0;//³äµç½Ó¿Ú×´Ì¬ÎÈ¶¨
+//				flag_charge_active = 0;//å……ç”µæ¥å£çŠ¶æ€ç¨³å®š
 //				flag_charge = 1;
 //				flag_charge_first_in = 1;
 			#if(short_reset_deal == reset_keep_Vout_degree)
 				enable_mos_working_mack_ram();
 			#endif
-//				degree_led_select();//µ÷Ñ¹µµÎ»Ñ¡µÆ
+//				degree_led_select();//è°ƒå‹æ¡£ä½é€‰ç¯
 //				clear_led_select();
 //				flag_led_r = 1;
-//				led_blink_count = blink_get_charge*2+1;//ÉÁË¸
-//				led_blink_delay = 0;	//ÉÁË¸£¬ĞèÒªÇåÁãÉÁË¸¼ÆÊ±
+//				led_blink_count = blink_get_charge*2+1;//é—ªçƒ
+//				led_blink_delay = 0;	//é—ªçƒï¼Œéœ€è¦æ¸…é›¶é—ªçƒè®¡æ—¶
 //				led_blink_half_circle = 50;	
 //				reset_charge_data();
 			}
@@ -359,22 +359,22 @@ void charge_scan(void)
 			Screw_charge_scan_delay = 0;
 		}
 //	}
-//#elseif(charge_Type==USB_charging) //USB³äµç
+//#elseif(charge_Type==USB_charging) //USBå……ç”µ
 	#if(USB_charge_check_full_mode == IO_check_full_pin)
-//	if( (!led_blink_count) && ( ((!flag_charge) && ((!p_charge) || (!p_full))) || (flag_charge && p_charge && p_full) ) )//³äµç½ÅºÍ³äÂú½Å¶¼·Ö±ğ½Óµ½Ö÷¿ØµÄÔ­Àí
-	if( (!led_blink_count) && ( ((!flag_USB_charging) && ((!p_charge) || (!p_full))) || (flag_USB_charging && p_charge && p_full) ) )//³äµç½ÅºÍ³äÂú½Å¶¼·Ö±ğ½Óµ½Ö÷¿ØµÄÔ­Àí
+//	if( (!led_blink_count) && ( ((!flag_charge) && ((!p_charge) || (!p_full))) || (flag_charge && p_charge && p_full) ) )//å……ç”µè„šå’Œå……æ»¡è„šéƒ½åˆ†åˆ«æ¥åˆ°ä¸»æ§çš„åŸç†
+	if( (!led_blink_count) && ( ((!flag_USB_charging) && ((!p_charge) || (!p_full))) || (flag_USB_charging && p_charge && p_full) ) )//å……ç”µè„šå’Œå……æ»¡è„šéƒ½åˆ†åˆ«æ¥åˆ°ä¸»æ§çš„åŸç†
 	#elseif(USB_charge_check_full_mode == AD_check_full_pin)
-	if( (!led_blink_count) && ( ((!flag_charge) && (!p_charge)) || (flag_charge && p_charge)) )//³äÂú½Å´®½Ó10Kµç×èºóºÍ³äµç½Å²¢Áªºó½Óµ½Ö÷¿ØÍ¬Ò»¸öIOµÄÔ­Àí
+	if( (!led_blink_count) && ( ((!flag_charge) && (!p_charge)) || (flag_charge && p_charge)) )//å……æ»¡è„šä¸²æ¥10Kç”µé˜»åå’Œå……ç”µè„šå¹¶è”åæ¥åˆ°ä¸»æ§åŒä¸€ä¸ªIOçš„åŸç†
 	#elseif(USB_charge_check_full_mode == BAT_AD_check_full)
-	if( (!led_blink_count) && ( ((!flag_charge) && (!p_charge)) || (flag_charge && p_charge)) )//½ö³äµç½Å½Óµ½Ö÷¿ØIO¿Ú»òÕß³äÂú½ÅºÍ³äµç½ÅÖ±½Ó²¢Áªºó½Óµ½Ö÷¿ØÍ¬Ò»¸öIOµÄÔ­Àí
+	if( (!led_blink_count) && ( ((!flag_charge) && (!p_charge)) || (flag_charge && p_charge)) )//ä»…å……ç”µè„šæ¥åˆ°ä¸»æ§IOå£æˆ–è€…å……æ»¡è„šå’Œå……ç”µè„šç›´æ¥å¹¶è”åæ¥åˆ°ä¸»æ§åŒä¸€ä¸ªIOçš„åŸç†
 	#endif
 	{
-		flag_charge_active = 1;//³äµç½Ó¿ÚÓĞ¶¯Ì¬
+		flag_charge_active = 1;//å……ç”µæ¥å£æœ‰åŠ¨æ€
 		charge_scan_delay ++;
 		if(charge_scan_delay >= 50)
 		{
 			charge_scan_delay = 0;
-//			flag_charge_active = 0;//³äµç½Ó¿Ú×´Ì¬ÎÈ¶¨
+//			flag_charge_active = 0;//å……ç”µæ¥å£çŠ¶æ€ç¨³å®š
 //			if(flag_charge)
 			if(flag_USB_charging)
 			{
@@ -387,11 +387,11 @@ void charge_scan(void)
 				flag_USB_charging = 1;
 //				flag_charge = 1;
 //				flag_charge_first_in = 1;
-//				degree_led_select();//µ÷Ñ¹µµÎ»Ñ¡µÆ
+//				degree_led_select();//è°ƒå‹æ¡£ä½é€‰ç¯
 //				clear_led_select();
 //				flag_led_r = 1;
-//				led_blink_count = blink_get_charge*2+1;//ÉÁË¸
-//				led_blink_delay = 0;	//ÉÁË¸£¬ĞèÒªÇåÁãÉÁË¸¼ÆÊ±
+//				led_blink_count = blink_get_charge*2+1;//é—ªçƒ
+//				led_blink_delay = 0;	//é—ªçƒï¼Œéœ€è¦æ¸…é›¶é—ªçƒè®¡æ—¶
 //				led_blink_half_circle = 50;	
 //				reset_charge_data();
 			}
@@ -400,7 +400,7 @@ void charge_scan(void)
 	else
 	{
 		charge_scan_delay = 0;
-//		flag_charge_active = 0;//³äµç½Ó¿Ú×´Ì¬ÎÈ¶¨
+//		flag_charge_active = 0;//å……ç”µæ¥å£çŠ¶æ€ç¨³å®š
 	}
 //	#endif
 	
@@ -477,18 +477,18 @@ void check_charge_degree(void)
 }
 */
 /*-------------------------------------//
-//-----------³äµç¹ı³Ì¼ì²âÑ­»·----------//
+//-----------å……ç”µè¿‡ç¨‹æ£€æµ‹å¾ªç¯----------//
 //-------------------------------------*/
 void charging_circle_fast(void)
 {
 	charge_circle_count_fast ++;
-	if(charge_circle_count_fast >= 4)//³ËÒÔ5ms
+	if(charge_circle_count_fast >= 4)//ä¹˜ä»¥5ms
 	{
 		charge_circle_count_fast = 0;
 		mos_duty = 0;
 		mos_off();
 		p_check_out0();
-//		char_disconnect_check_delay = 20;//³ËÒÔ100us
+//		char_disconnect_check_delay = 20;//ä¹˜ä»¥100us
 	}
 	else if(!flag_full)
 	{		
@@ -544,11 +544,11 @@ void check_full_fast(void)
 		{
 			full_count = 0;
 			full_count_protect = 0;
-//		#if(charge_Type==Screw_charging )   //ÂİÎÆÍ·³äµç
+//		#if(charge_Type==Screw_charging )   //èºçº¹å¤´å……ç”µ
 //			clear_led_select();
 //			flag_led_r = 1;
-//			led_blink_count = blink_full*2+1;//ÉÁË¸
-//			led_blink_delay = 0;	//ÉÁË¸£¬ĞèÒªÇåÁãÉÁË¸¼ÆÊ±
+//			led_blink_count = blink_full*2+1;//é—ªçƒ
+//			led_blink_delay = 0;	//é—ªçƒï¼Œéœ€è¦æ¸…é›¶é—ªçƒè®¡æ—¶
 //			led_blink_half_circle = 50;	
 			mos_duty = 0;
 			mos_off();
@@ -564,7 +564,7 @@ void check_full_fast(void)
 
 
 /*-------------------------------------//
-//-----------³äµç¹ı³Ì¼ì²âÑ­»·----------//
+//-----------å……ç”µè¿‡ç¨‹æ£€æµ‹å¾ªç¯----------//
 //-------------------------------------* /
 void charging_circle(void)
 {
@@ -620,16 +620,16 @@ void charging_circle(void)
 			mos_duty = 0;
 			mos_off();
 			flag_charge = 0;
-//			degree_led_select();//µ÷Ñ¹µµÎ»Ñ¡µÆ
+//			degree_led_select();//è°ƒå‹æ¡£ä½é€‰ç¯
 			clear_led_select();
 			flag_led_r = 1;
-			led_blink_count = blink_off_charge*2+1;//ÉÁË¸
-			led_blink_delay = 0;	//ÉÁË¸£¬ĞèÒªÇåÁãÉÁË¸¼ÆÊ±
+			led_blink_count = blink_off_charge*2+1;//é—ªçƒ
+			led_blink_delay = 0;	//é—ªçƒï¼Œéœ€è¦æ¸…é›¶é—ªçƒè®¡æ—¶
 //			led_blink_half_circle = 50;	
 		}
 		else if(!flag_full)
 		{
-//			degree_led_select();//µ÷Ñ¹µµÎ»Ñ¡µÆ
+//			degree_led_select();//è°ƒå‹æ¡£ä½é€‰ç¯
 			led_duty = led_duty_max;
 			led_on();
 			mos_duty = mos_duty_max;
@@ -652,11 +652,11 @@ void check_full_pin(void)
 			{
 				full_count = 0;
 				flag_full = 1;
-//				degree_led_select();//µµÎ»Ñ¡µÆ
+//				degree_led_select();//æ¡£ä½é€‰ç¯
 //				clear_led_select();
 //				flag_led_r = 1;
-//				led_blink_count = blink_full*2+1;//ÉÁË¸
-//				led_blink_delay = 0;	//ÉÁË¸£¬ĞèÒªÇåÁãÉÁË¸¼ÆÊ±
+//				led_blink_count = blink_full*2+1;//é—ªçƒ
+//				led_blink_delay = 0;	//é—ªçƒï¼Œéœ€è¦æ¸…é›¶é—ªçƒè®¡æ—¶
 //				led_blink_half_circle = 40;	
 //				flag_led_Level_blink = 0;
 			}
@@ -690,7 +690,7 @@ void check_full_pin(void)
 
 
 /*-------------------------------------//
-//------------³äµç¹ı³Ì²ÎÊı¸´Î»---------//
+//------------å……ç”µè¿‡ç¨‹å‚æ•°å¤ä½---------//
 //-------------------------------------*/
 void reset_charge_data(void)
 {
@@ -700,7 +700,7 @@ void reset_charge_data(void)
 	charge_disconnect_count_fast = 0;
 	flag_vdd_degree_up = 0;
 	flag_vdd_degree_down = 0;
-	full_count_protect = 0;//¸´ÓÃÄÚ´æ!!!
+	full_count_protect = 0;//å¤ç”¨å†…å­˜!!!
 	VDD_temp = 0;
 }
 
@@ -750,11 +750,11 @@ void check_full(void)
 			full_count_protect = 0;
 			flag_full = 1;
 			charge_circle_count = 379;
-//			degree_led_select();//µ÷Ñ¹µµÎ»Ñ¡µÆ
+//			degree_led_select();//è°ƒå‹æ¡£ä½é€‰ç¯
 			clear_led_select();
 			flag_led_r = 1;
-			led_blink_count = blink_full*2+1;//ÉÁË¸
-			led_blink_delay = 0;	//ÉÁË¸£¬ĞèÒªÇåÁãÉÁË¸¼ÆÊ±
+			led_blink_count = blink_full*2+1;//é—ªçƒ
+			led_blink_delay = 0;	//é—ªçƒï¼Œéœ€è¦æ¸…é›¶é—ªçƒè®¡æ—¶
 //			led_blink_half_circle = 50;	
 			mos_duty = 0;
 			mos_off();
@@ -834,8 +834,8 @@ void p_charge_io_in(void)
 void p_charge_ad_in(void)
 {
 	set_charge_pin_ad;
-//	flag_charge_pin_ad = 1;	//³äµçº¯ÊıÃ¿5mSÖÃ1Ò»´Î£¬Ö»ÓĞ¸Ã±êÖ¾ÊÇ1Ê±²ÅÔÊĞíÇĞ»»³ÉAD¿Ú£¬¶ÁÍêADÇĞ»»»ØIO¿Úºó°Ñ±êÖ¾Î»Çå0£¬
-							//³äµçº¯ÊıÖ»ÓĞµÈ´ıÔÚ±êÖ¾Î»Îª0Ê±²ÅÄÜ¶ÁÈ¡µçÆ½£¬¶ÁÍê±êÖ¾ºóÓÖ°ÑËüÖÃ1
+//	flag_charge_pin_ad = 1;	//å……ç”µå‡½æ•°æ¯5mSç½®1ä¸€æ¬¡ï¼Œåªæœ‰è¯¥æ ‡å¿—æ˜¯1æ—¶æ‰å…è®¸åˆ‡æ¢æˆADå£ï¼Œè¯»å®ŒADåˆ‡æ¢å›IOå£åæŠŠæ ‡å¿—ä½æ¸…0ï¼Œ
+							//å……ç”µå‡½æ•°åªæœ‰ç­‰å¾…åœ¨æ ‡å¿—ä½ä¸º0æ—¶æ‰èƒ½è¯»å–ç”µå¹³ï¼Œè¯»å®Œæ ‡å¿—ååˆæŠŠå®ƒç½®1
 }
 	#endif
 #endif
@@ -860,34 +860,34 @@ void mos_off(void)
 void degree_led_select(void)
 {
 	clear_led_select();
-	if(!V_out_degree) 			flag_led_r = 1;//µÚ0µµ
-	else if(V_out_degree == 1)	flag_led_g = 1;//µÚ1µµ
-	else 						flag_led_b = 1;//µÚ2µµ
+	if(!V_out_degree) 			flag_led_r = 1;//ç¬¬0æ¡£
+	else if(V_out_degree == 1)	flag_led_g = 1;//ç¬¬1æ¡£
+	else 						flag_led_b = 1;//ç¬¬2æ¡£
 
 /*	if(!vdd_degree)
 	{
-		if(VDD < (vdd_degree_point1+3)) 			{ flag_led_r = 1; }//µÚ0µµ
-		else if(VDD < (vdd_degree_point2+3))		{ flag_led_b = 1; vdd_degree = 1;}//µÚ1µµ
-		else 										{ flag_led_w = 1; vdd_degree = 2;}//µÚ2µµ
+		if(VDD < (vdd_degree_point1+3)) 			{ flag_led_r = 1; }//ç¬¬0æ¡£
+		else if(VDD < (vdd_degree_point2+3))		{ flag_led_b = 1; vdd_degree = 1;}//ç¬¬1æ¡£
+		else 										{ flag_led_w = 1; vdd_degree = 2;}//ç¬¬2æ¡£
 	}
 	elseif(vdd_degree == 1)
 	{
-		if(VDD < (vdd_degree_point1-3)) 			{ flag_led_r = 1; vdd_degree = 0;}//µÚ0µµ
-		else if(VDD < (vdd_degree_point2+3))		{ flag_led_b = 1; }//µÚ1µµ
-		else 										{ flag_led_w = 1; vdd_degree = 2;}//µÚ2µµ
+		if(VDD < (vdd_degree_point1-3)) 			{ flag_led_r = 1; vdd_degree = 0;}//ç¬¬0æ¡£
+		else if(VDD < (vdd_degree_point2+3))		{ flag_led_b = 1; }//ç¬¬1æ¡£
+		else 										{ flag_led_w = 1; vdd_degree = 2;}//ç¬¬2æ¡£
 	}
 	else
 	{
-		if(VDD < (vdd_degree_point1-3)) 			{ flag_led_r = 1; vdd_degree = 0;}//µÚ0µµ
-		else if(VDD < (vdd_degree_point2-3))		{ flag_led_b = 1; vdd_degree = 1;}//µÚ1µµ
-		else 										{ flag_led_w = 1; }//µÚ2µµ
+		if(VDD < (vdd_degree_point1-3)) 			{ flag_led_r = 1; vdd_degree = 0;}//ç¬¬0æ¡£
+		else if(VDD < (vdd_degree_point2-3))		{ flag_led_b = 1; vdd_degree = 1;}//ç¬¬1æ¡£
+		else 										{ flag_led_w = 1; }//ç¬¬2æ¡£
 	}
 * /
 }
 /*
 void charge_degree_led_select(void)
 {
-	//--------------------------µµÎ»Ñ¡Ôñ
+	//--------------------------æ¡£ä½é€‰æ‹©
 	clear_led_select();
 	switch(vdd_degree)
 	{
@@ -995,7 +995,7 @@ void vdd_degree_scan(void)
 
 #if(short_reset_deal == reset_keep_Vout_degree)
 /*-------------------------------------//
-//------------¶Ì±£¸´Î»ÉÁË¸±£»¤---------//
+//------------çŸ­ä¿å¤ä½é—ªçƒä¿æŠ¤---------//
 //-------------------------------------*/
 void enable_mos_working_mack_ram(void)
 {
