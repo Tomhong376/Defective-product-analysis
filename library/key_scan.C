@@ -16,7 +16,7 @@ bit flag_3click			:r_key_flag.4
 bit flag_2click			:r_key_flag.5
 bit flag_key_release	:r_key_flag.6
 
-//--------------------------------------------------¿ÍÖÆ±äÁ¿
+//--------------------------------------------------å®¢åˆ¶å˜é‡
 byte click_time_count, click_count;
 word key_5c_count;
 
@@ -24,7 +24,7 @@ void key_scan_c_5c(void);
 void reset_5click(void);
 void charge_scan(void);
 //-------------------------------------//
-//---------------µ¥»÷------------------//
+//---------------å•å‡»------------------//
 //-------------------------------------//
 void key_scan_click(void)
 {
@@ -41,7 +41,7 @@ void key_scan_click(void)
 			else
 			{
 				flag_key = 1;
-				key_value = 1;	//Êä³öµ¥»÷
+				key_value = 1;	//è¾“å‡ºå•å‡»
 			}
 		}
 	}
@@ -52,7 +52,7 @@ void key_scan_click(void)
 }
 
 //-------------------------------------//
-//-------------µ¥»÷ + Ë«»÷-------------//
+//-------------å•å‡» + åŒå‡»-------------//
 //-------------------------------------//
 void key_scan_c_dc(void)
 {
@@ -84,7 +84,7 @@ void key_scan_c_dc(void)
 		{
 			flag_key_press = 0;
 			double_click_delay_count = 0;
-			key_value = 2;		//Êä³öË«»÷
+			key_value = 2;		//è¾“å‡ºåŒå‡»
 		}
 		else
 		{
@@ -100,16 +100,16 @@ void key_scan_c_dc(void)
 			{
 				flag_key_press = 0;
 				double_click_delay_count = 0;
-				key_value = 1;	//Êä³öµ¥»÷
+				key_value = 1;	//è¾“å‡ºå•å‡»
 			}
 		}
 	}
 }
 
 //-------------------------------------//
-//-------------µ¥»÷ + ³¤°´-------------//
+//-------------å•å‡» + é•¿æŒ‰-------------//
 //-------------------------------------//
-void key_scan_c_lp(void)			//µ¥»÷ + ³¤°´
+void key_scan_c_lp(void)			//å•å‡» + é•¿æŒ‰
 {
 	if((flag_key && p_key0) || ((!flag_key) && (!p_key0)))
 	{
@@ -142,7 +142,7 @@ void key_scan_c_lp(void)			//µ¥»÷ + ³¤°´
 			{
 				flag_key_press = 0;
 				long_key_count = 0;	
-				key_value = 3;		//Êä³ö³¤°´
+				key_value = 3;		//è¾“å‡ºé•¿æŒ‰
 			}
 		}
 	}
@@ -150,7 +150,7 @@ void key_scan_c_lp(void)			//µ¥»÷ + ³¤°´
 	{
 		if(flag_key_press)
 		{
-			key_value = 1;			//Êä³öµ¥»÷
+			key_value = 1;			//è¾“å‡ºå•å‡»
 		}
 		long_key_count = 0;
 		flag_key_press = 0;
@@ -158,78 +158,9 @@ void key_scan_c_lp(void)			//µ¥»÷ + ³¤°´
 }
 
 //-------------------------------------//
-//-------------Ë«»÷ + ³¤°´-------------//
+//-------------åŒå‡» + é•¿æŒ‰-------------//
 //-------------------------------------//
-void key_scan_dc_lp(void)			//Ë«»÷ + ³¤°´
-{
-	if((flag_key && p_key0) || ((!flag_key) && (!p_key0)))
-	{
-		key_count ++;
-		if(key_count >= key_delay_time)
-		{
-			key_count = 0;
-			if(flag_key)
-			{
-				flag_key = 0;
-			}
-			else
-			{
-				flag_key = 1;
-				flag_key_press = 1;
-			}
-		}
-	}
-	else
-	{
-		key_count = 0;
-	}
-	//-------------------------
-	if(flag_key)
-	{
-		double_click_delay_count = 0;
-		if(flag_key_press)
-		{
-			long_key_count ++;
-			if(long_key_count >= long_key_time)
-			{
-				flag_key_press = 0;
-				long_key_count = 0;	
-				key_click_count = 0;
-				key_value = 3;		//Êä³ö³¤°´
-			}
-		}		
-	}
-	else
-	{
-		long_key_count = 0;
-		if(flag_key_press)
-		{
-			key_click_count ++;
-		}
-		flag_key_press = 0;
-
-		if(key_click_count >= 2)
-		{
-			double_click_delay_count = 0;
-			key_click_count = 0;
-			key_value = 2;		//Êä³öË«»÷
-		}
-
-		if(key_click_count != 0)
-		{
-			double_click_delay_count ++;
-			if(double_click_delay_count >= double_click_delay_time)
-			{
-				double_click_delay_count = 0;
-				key_click_count = 0;
-			}
-		}
-	}
-}
-//-------------------------------------//
-//---------µ¥»÷ + Ë«»÷ + ³¤°´----------//
-//-------------------------------------//
-void key_scan_c_dc_lp(void)			//µ¥»÷ + Ë«»÷ + ³¤°´
+void key_scan_dc_lp(void)			//åŒå‡» + é•¿æŒ‰
 {
 	if((flag_key && p_key0) || ((!flag_key) && (!p_key0)))
 	{
@@ -264,7 +195,7 @@ void key_scan_c_dc_lp(void)			//µ¥»÷ + Ë«»÷ + ³¤°´
 				flag_key_press = 0;
 				long_key_count = 0;	
 				key_click_count = 0;
-				key_value = 3;		//Êä³ö³¤°´
+				key_value = 3;		//è¾“å‡ºé•¿æŒ‰
 			}
 		}		
 	}
@@ -281,7 +212,7 @@ void key_scan_c_dc_lp(void)			//µ¥»÷ + Ë«»÷ + ³¤°´
 		{
 			double_click_delay_count = 0;
 			key_click_count = 0;
-			key_value = 2;		//Êä³öË«»÷
+			key_value = 2;		//è¾“å‡ºåŒå‡»
 		}
 
 		if(key_click_count != 0)
@@ -291,16 +222,85 @@ void key_scan_c_dc_lp(void)			//µ¥»÷ + Ë«»÷ + ³¤°´
 			{
 				double_click_delay_count = 0;
 				key_click_count = 0;
-				key_value = 1;		//Êä³öµ¥»÷
+			}
+		}
+	}
+}
+//-------------------------------------//
+//---------å•å‡» + åŒå‡» + é•¿æŒ‰----------//
+//-------------------------------------//
+void key_scan_c_dc_lp(void)			//å•å‡» + åŒå‡» + é•¿æŒ‰
+{
+	if((flag_key && p_key0) || ((!flag_key) && (!p_key0)))
+	{
+		key_count ++;
+		if(key_count >= key_delay_time)
+		{
+			key_count = 0;
+			if(flag_key)
+			{
+				flag_key = 0;
+			}
+			else
+			{
+				flag_key = 1;
+				flag_key_press = 1;
+			}
+		}
+	}
+	else
+	{
+		key_count = 0;
+	}
+	//-------------------------
+	if(flag_key)
+	{
+		double_click_delay_count = 0;
+		if(flag_key_press)
+		{
+			long_key_count ++;
+			if(long_key_count >= long_key_time)
+			{
+				flag_key_press = 0;
+				long_key_count = 0;	
+				key_click_count = 0;
+				key_value = 3;		//è¾“å‡ºé•¿æŒ‰
+			}
+		}		
+	}
+	else
+	{
+		long_key_count = 0;
+		if(flag_key_press)
+		{
+			key_click_count ++;
+		}
+		flag_key_press = 0;
+
+		if(key_click_count >= 2)
+		{
+			double_click_delay_count = 0;
+			key_click_count = 0;
+			key_value = 2;		//è¾“å‡ºåŒå‡»
+		}
+
+		if(key_click_count != 0)
+		{
+			double_click_delay_count ++;
+			if(double_click_delay_count >= double_click_delay_time)
+			{
+				double_click_delay_count = 0;
+				key_click_count = 0;
+				key_value = 1;		//è¾“å‡ºå•å‡»
 			}
 		}
 	}
 }
 
 //-------------------------------------//
-//------------¿ÍÖÆ°´¼üÉ¨Ãè-------------//
+//------------å®¢åˆ¶æŒ‰é”®æ‰«æ-------------//
 //-------------------------------------//
-void key_scan_c_5c(void)//µ¥»÷+5Á¬»÷
+void key_scan_c_5c(void)//å•å‡»+5è¿å‡»
 {
 	if((flag_key && p_key) || ((!flag_key) && (!p_key)))
 	{
@@ -316,34 +316,39 @@ void key_scan_c_5c(void)//µ¥»÷+5Á¬»÷
 			else
 			{
 				flag_key = 1;
-				flag_key_press = 1;//´Ë´¦ÖÃÆğ±êÖ¾Î»£¬µ½ÍâÃæÓÃÍê¾ÍÇåµô
+				flag_key_press = 1;//æ­¤å¤„ç½®èµ·æ ‡å¿—ä½ï¼Œåˆ°å¤–é¢ç”¨å®Œå°±æ¸…æ‰
 			}
 		}
-		flag_key_active = 1;//°´¼ü×´Ì¬ÓĞ¶¯Ì¬
+		flag_key_active = 1;//æŒ‰é”®çŠ¶æ€æœ‰åŠ¨æ€
 	}
 	else
 	{
 		key_count = 0;
-		flag_key_active = 0;//°´¼ü×´Ì¬ÎÈ¶¨
+                                        click_count = 0;
+                                        key_5c_count = 0;
+                                        click_count = 0;
+                                        key_5c_count = 0;
+                                        flag_5click = 0;
+		flag_key_active = 0;//æŒ‰é”®çŠ¶æ€ç¨³å®š
 	}
-	//--------------------------¼ì²â5Á¬»÷
+	//--------------------------æ£€æµ‹5è¿å‡»
 	if(flag_key_press)
 	{
-		if(click_time_count == 0)//ÎåÁ¬»÷µÄµÚÒ»»÷
+		if(click_time_count == 0)//äº”è¿å‡»çš„ç¬¬ä¸€å‡»
 		{
 			click_time_count ++;
-			click_count = 1;			//µ¥»÷´ÎÊıÎª1
-			key_5c_count = 0;			//Á¬»÷×Ü¼ÆÊ±ÇåÁã
+			click_count = 1;			//å•å‡»æ¬¡æ•°ä¸º1
+			key_5c_count = 0;			//è¿å‡»æ€»è®¡æ—¶æ¸…é›¶
 		}
-		else	//·ÇµÚÒ»»÷
+		else	//éç¬¬ä¸€å‡»
 		{
-			key_5c_count += click_time_count;//2.5S¼ÆÊ±
+			key_5c_count += click_time_count;//2.5Sè®¡æ—¶
 			if(key_5c_count < 500)
 			{
 				click_count ++;
-				if(click_count>4)	//µ¥»÷¼ÆÊı+1,ÅĞ¶ÏÁ¬»÷´ÎÊı
+				if(click_count>4)	//å•å‡»è®¡æ•°+1,åˆ¤æ–­è¿å‡»æ¬¡æ•°
 				{
-					flag_5click = 1;	//È·ÈÏ5Á¬»÷
+					flag_5click = 1;	//ç¡®è®¤5è¿å‡»
 					click_time_count = 0;
 				}
 				else
@@ -351,9 +356,9 @@ void key_scan_c_5c(void)//µ¥»÷+5Á¬»÷
 					click_time_count = 1;
 				}
 			}
-			else//×ÜÊ±¼ä³¬Ê±
+			else//æ€»æ—¶é—´è¶…æ—¶
 			{
-				click_time_count = 0; //µ¥´Î¼ÆÊ±ÇåÁã
+				click_time_count = 0; //å•æ¬¡è®¡æ—¶æ¸…é›¶
 			}
 		}
 	}
@@ -362,7 +367,7 @@ void key_scan_c_5c(void)//µ¥»÷+5Á¬»÷
 		if(click_time_count)
 		{
 			click_time_count ++;
-			if(click_time_count>100)	//µã»÷¼ä¸ô³¬¹ı0.5SÊÓ×÷³¬Ê±
+			if(click_time_count>100)	//ç‚¹å‡»é—´éš”è¶…è¿‡0.5Sè§†ä½œè¶…æ—¶
 			{
 				click_time_count = 0;
 				if(!flag_key)
@@ -382,7 +387,7 @@ void key_scan_c_5c(void)//µ¥»÷+5Á¬»÷
 }
 
 ///////////////////////////////////////
-//---------ÖØÖÃ°´¼üÁ¬»÷É¨Ãè----------//
+//---------é‡ç½®æŒ‰é”®è¿å‡»æ‰«æ----------//
 ///////////////////////////////////////
 void reset_5click(void)
 {
